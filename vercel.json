@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     }
   ],
-  "buildCommand": "npm run build",
+  "buildCommand": "prisma generate && npm run build",
   "routes": [
     {
       "src": "/(.*)",
