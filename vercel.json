@@ -2,11 +2,10 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist",
+      "src": "src/main.ts",
       "use": "@vercel/node"
     }
   ],
-  "buildCommand": "prisma generate && npm run build",
   "routes": [
     {
       "src": "/(.*)",
@@ -20,10 +19,5 @@
         "OPTIONS"
       ]
     }
-  ],
-  "build": {
-    "env": {
-      "DATABASE_URL": "@database-url"
-    }
-  }
+  ]
 }
