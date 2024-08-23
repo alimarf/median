@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 export const roundsOfHashing = 10;
 
@@ -40,5 +41,9 @@ export class UsersService {
 
   remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    return this.prisma.user.findUnique({ where: { email } });
   }
 }
