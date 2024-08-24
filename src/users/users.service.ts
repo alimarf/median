@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const roundsOfHashing = 10;
 
@@ -12,13 +13,31 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      roundsOfHashing,
-    );
+    try {
+      const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        roundsOfHashing,
+      );
 
-    createUserDto.password = hashedPassword;
-    return this.prisma.user.create({ data: createUserDto });
+      createUserDto.password = hashedPassword;
+
+      const user = await this.prisma.user.create({ data: createUserDto });
+
+      const { name, email } = user;
+
+      return {
+        message: 'Successfully Created',
+        data: { name, email },
+      };
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('User already exists');
+        }
+      }
+      console.error('Error during signup:', error);
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
   }
 
   findAll() {

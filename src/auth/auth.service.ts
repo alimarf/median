@@ -56,7 +56,6 @@ export class AuthService {
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        // Unique constraint failed on the fields: (`email`)
         if (error.code === 'P2002') {
           throw new ConflictException('User already exists');
         }

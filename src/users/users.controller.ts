@@ -23,11 +23,17 @@ export class UsersController {
 
   @Post('create')
   async create(@Body() createUserDto: CreateUserDto) {
-    return new UserEntity(await this.usersService.create(createUserDto));
+    const result = await this.usersService.create(createUserDto);
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: result.message,
+      data: result.data,
+    };
   }
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async findAll() {
     const users = await this.usersService.findAll();
 
