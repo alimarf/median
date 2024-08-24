@@ -35,6 +35,8 @@ export class AuthService {
     console.log('userAuth', user);
 
     return {
+      statusCode: 200,
+      message: 'Successfully logged in',
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
   }
