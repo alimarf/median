@@ -6,10 +6,13 @@ export class UserEntity implements User {
     Object.assign(this, partial);
   }
 
+  @Exclude()
   id: number;
 
+  @Exclude()
   createdAt: Date;
 
+  @Exclude()
   updatedAt: Date;
 
   name: string;

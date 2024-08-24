@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,6 +8,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entities/auth.entity';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { roundsOfHashing } from 'src/users/users.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -31,5 +35,34 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
+  }
+
+  async signup(createUserDto: CreateUserDto) {
+    try {
+      const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        roundsOfHashing,
+      );
+
+      createUserDto.password = hashedPassword;
+
+      const user = await this.prisma.user.create({ data: createUserDto });
+
+      const { name, email } = user;
+
+      return {
+        message: 'Successfully registered',
+        data: { name, email },
+      };
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        // Unique constraint failed on the fields: (`email`)
+        if (error.code === 'P2002') {
+          throw new ConflictException('User already exists');
+        }
+      }
+      console.error('Error during signup:', error);
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
   }
 }
