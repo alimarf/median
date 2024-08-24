@@ -2,8 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
-import { UpdateUserDto } from './dto/update-user.dto';
+// import { User } from '@prisma/client';
+// import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const roundsOfHashing = 10;
@@ -54,21 +54,21 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(
-        updateUserDto.password,
-        roundsOfHashing,
-      );
-    }
-    return this.prisma.user.update({ where: { id }, data: updateUserDto });
-  }
+  // async update(id: string, updateUserDto: UpdateUserDto) {
+  //   if (updateUserDto.password) {
+  //     updateUserDto.password = await bcrypt.hash(
+  //       updateUserDto.password,
+  //       roundsOfHashing,
+  //     );
+  //   }
+  //   return this.prisma.user.update({ where: { id }, data: updateUserDto });
+  // }
 
-  remove(id: string) {
-    return this.prisma.user.delete({ where: { id } });
-  }
+  // remove(id: string) {
+  //   return this.prisma.user.delete({ where: { id } });
+  // }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
-    return this.prisma.user.findUnique({ where: { email } });
-  }
+  // async findOneByEmail(email: string): Promise<User | undefined> {
+  //   return this.prisma.user.findUnique({ where: { email } });
+  // }
 }
