@@ -7,7 +7,7 @@ export class UserEntity implements User {
   }
 
   @Exclude()
-  id: number;
+  id: string;
 
   @Exclude()
   createdAt: Date;

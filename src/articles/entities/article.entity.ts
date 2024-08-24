@@ -16,7 +16,7 @@ export class ArticleEntity implements Article {
 
   updatedAt: Date;
 
-  authorId: number | null;
+  authorId: string | null;
 
   author?: UserEntity;
 

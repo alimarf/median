@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,22 +28,29 @@ export class UsersController {
 
   @Get()
   // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
   async findAll() {
     const users = await this.usersService.findAll();
-    return users.map((user) => new UserEntity(user));
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Users retrieved successfully',
+      data: users.map((user) => {
+        const { id, name, email } = user;
+        return { id, name, email };
+      }),
+    };
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: string) {
     return new UserEntity(await this.usersService.findOne(id));
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return new UserEntity(await this.usersService.update(id, updateUserDto));
@@ -50,7 +58,7 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: string) {
     return new UserEntity(await this.usersService.remove(id));
   }
 }

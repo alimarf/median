@@ -23,11 +23,11 @@ model Article {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   author      User?    @relation(fields: [authorId], references: [id])
-  authorId    Int?
+  authorId    String   
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(uuid())
   name      String?
   email     String    @unique
   password  String
